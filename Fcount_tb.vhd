@@ -15,8 +15,7 @@ component Fcount is -- entity to test
 		  );
 end component;
 
-constant clock_Hz : integer := 50e6;
-constant clock_period : time := 1 sec / clock_Hz;
+constant clock_period : time := 10 ns;
 
 signal tb_clock : std_logic := '1'; --assign starting values for clock and reset
 signal tb_reset : std_logic := '1';
@@ -25,14 +24,32 @@ signal tb_Y : unsigned (5 downto 0);
 
 begin
 
-DUT : Fcount
-port map (
-			 tb_clock,
-			 tb_reset,
-			 tb_D,
-			 tb_Y
-			);
-			
-tb_clock <= not tb_clock after clock_period / 2;
+uut : Fcount
+port map (clock => clock, reset => reset => D => D, Y => Y);
 
+clock_process : process
+	begin
+		clock <= '0';
+	wait for clock_period / 2;
+	clock <= '1';
+wait for clock_period / 2;
+	end process;
+
+stimulus : process
+	begin
+		wait for 20 ns;
+		
+		reset <= '1';
+	wait for 10 ns;
+	reset <= '0';
+
+wait for 50 ns;
+	reset <= '1';
+wait for 10 ns;
+	reset <= '0';
+
+wait;
+end process;
+end behavioral
+	
 end behavior;
